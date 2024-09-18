@@ -1,22 +1,52 @@
-/* eslint-disable no-unused-vars */
-import React from "react";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  Form,
+  redirect,
+  useNavigation,
+  useActionData,
+} from "react-router-dom";
 import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow, Logo } from "../components";
+import customFetch from "../utils/customFetch";
+import { toast } from "react-toastify";
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const action = async ({ request }) => {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+  const errors = { msg: "" };
+  if (data.password.length < 3) {
+    errors.msg = "password too short";
+    return errors;
+  }
+  try {
+    await customFetch.post("/auth/login", data);
+    toast.success("Login successful");
+    return redirect("/dashboard");
+  } catch (error) {
+    // toast.error(error?.response?.data?.message);
+    errors.msg = error.response?.data?.message;
+    return errors;
+  }
+};
 
 const Login = () => {
+  const errors = useActionData();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   return (
     <Wrapper>
-      <form className="form">
+      <Form method="post" className="form">
         <Logo />
-        <h4>Login</h4>
+        <h4>login</h4>
+        {errors?.msg && <p style={{ color: "red" }}>{errors.msg}</p>}
         <FormRow type="email" name="email" defaultValue="kishan@gmail.com" />
-        <FormRow type="password" name="password" defaultValue="secret123" />
-        <button type="submit" className="btn btn-block">
-          Login
+        <FormRow type="password" name="password" defaultValue="kumar042" />
+        <button type="submit" className="btn btn-block" disabled={isSubmitting}>
+          {isSubmitting ? "submitting..." : "submit"}
         </button>
-        <button type="submit" className="btn btn-block">
-          Explore the App
+        <button type="button" className="btn btn-block">
+          explore the app
         </button>
         <p>
           Not a member yet?
@@ -24,9 +54,8 @@ const Login = () => {
             Register
           </Link>
         </p>
-      </form>
+      </Form>
     </Wrapper>
   );
 };
-
 export default Login;
