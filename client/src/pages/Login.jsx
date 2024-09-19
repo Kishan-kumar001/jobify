@@ -1,12 +1,6 @@
-import {
-  Link,
-  Form,
-  redirect,
-  useNavigation,
-  useActionData,
-} from "react-router-dom";
+import { Link, Form, redirect, useNavigate } from "react-router-dom";
 import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
-import { FormRow, Logo } from "../components";
+import { FormRow, Logo, SubmitBtn } from "../components";
 import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
 
@@ -21,31 +15,39 @@ export const action = async ({ request }) => {
   }
   try {
     await customFetch.post("/auth/login", data);
-    toast.success("Login successful");
+    toast.success("Login Successful");
     return redirect("/dashboard");
   } catch (error) {
-    // toast.error(error?.response?.data?.message);
-    errors.msg = error.response?.data?.message;
+    toast.error(error?.response?.data?.message);
+    // errors.msg = error.response?.data?.message;
     return errors;
   }
 };
 
 const Login = () => {
-  const errors = useActionData();
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+  const navigate = useNavigate();
+  const loginDemoUser = async () => {
+    const data = {
+      email: "test@test.com",
+      password: "secret123",
+    };
+    try {
+      await customFetch.post("/auth/login", data);
+      toast.success("Take a Test Drive");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    }
+  };
   return (
     <Wrapper>
       <Form method="post" className="form">
         <Logo />
         <h4>login</h4>
-        {errors?.msg && <p style={{ color: "red" }}>{errors.msg}</p>}
         <FormRow type="email" name="email" defaultValue="kishan@gmail.com" />
         <FormRow type="password" name="password" defaultValue="kumar042" />
-        <button type="submit" className="btn btn-block" disabled={isSubmitting}>
-          {isSubmitting ? "submitting..." : "submit"}
-        </button>
-        <button type="button" className="btn btn-block">
+        <SubmitBtn />
+        <button type="button" className="btn btn-block" onClick={loginDemoUser}>
           explore the app
         </button>
         <p>

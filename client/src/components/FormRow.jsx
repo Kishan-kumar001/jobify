@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 
-const FormRow = ({ type, name, labelText, defaultValue }) => {
+const FormRow = ({ type, name, labelText, defaultValue, onChange }) => {
   return (
     <div className="form-row">
       <label htmlFor={name} className="form-label">
@@ -14,6 +14,7 @@ const FormRow = ({ type, name, labelText, defaultValue }) => {
         name={name}
         className="form-input"
         defaultValue={defaultValue || ""}
+        onChange={onChange}
         required
       />
     </div>

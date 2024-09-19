@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
 import { useContext, createContext } from "react";
 import { toast } from "react-toastify";
@@ -7,10 +6,15 @@ import customFetch from "../utils/customFetch";
 import { useLoaderData } from "react-router-dom";
 
 export const loader = async ({ request }) => {
+  const params = Object.fromEntries([
+    ...new URL(request.url).searchParams.entries(),
+  ]);
   try {
-    const { data } = await customFetch.get("/jobs");
+    const { data } = await customFetch.get("/jobs", {
+      params,
+    });
     return {
-      data,
+      data,searchValues:{...params}
     };
   } catch (error) {
     toast.error(error?.response?.data?.message);
@@ -21,10 +25,10 @@ export const loader = async ({ request }) => {
 const AllJobsContext = createContext();
 
 const AllJobs = () => {
-  const { data } = useLoaderData();
+  const { data ,searchValues} = useLoaderData();
 
   return (
-    <AllJobsContext.Provider value={{ data }}>
+    <AllJobsContext.Provider value={{ data,searchValues }}>
       <SearchContainer />
       <JobsContainer />
     </AllJobsContext.Provider>
